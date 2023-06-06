@@ -22,27 +22,28 @@ namespace BeatMatcher.Controllers
         }
 
         [HttpGet]
-        // [Route("api/spotify/audio-features")]
+        [Route("api/spotify/audio-features")]
 
-        public async Task<TrackSelectDto> Get([FromQuery] string query)
+        public async Task<TrackSelectDto> Get(string trackId, int selectedIndex)
         {
             var clientId = "";
             var clientSecret = "";
             var token = await _spotifyAccountService.GetToken(clientId, clientSecret);
 
-            var searchResults = await _spotifySearchService.GetSongs(query, token);
+            var searchResults = await _spotifySearchService.GetSongs(trackId, token);
 
-            if (searchResults.Count > 0)
+            if (searchResults.Count > 0 && selectedIndex >= 0 && selectedIndex < searchResults.Count)
             {
-                var trackId = searchResults[0].TrackId; // Use the first search result
-                var track = await _trackSelectService.GetTrack(trackId, token);
+                var selectedTrack = searchResults[selectedIndex];
+                var track = await _trackSelectService.GetTrack(selectedTrack.TrackId, token);
 
                 return track;
             }
             else
             {
-                throw new InvalidOperationException("No search results found");
+                throw new InvalidOperationException("Invalid search result index or no search results found");
             }
         }
+
     }
 }

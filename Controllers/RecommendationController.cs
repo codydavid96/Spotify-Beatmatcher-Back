@@ -11,12 +11,14 @@ namespace BeatMatcher.Controllers
         private readonly IRecommendationService _recommendationService;
         private readonly ISpotifyAccountService _spotifyAccountService;
         private readonly ITrackSelectService _trackSelectService;
+        private readonly ISpotifySearchService _spotifySearchService;
 
-        public RecommendationController(IRecommendationService recommendationService, ISpotifyAccountService spotifyAccountService, ITrackSelectService trackSelectService)
+        public RecommendationController(IRecommendationService recommendationService, ISpotifyAccountService spotifyAccountService, ITrackSelectService trackSelectService, ISpotifySearchService spotifySearchService)
         {
             _recommendationService = recommendationService;
             _spotifyAccountService = spotifyAccountService;
             _trackSelectService = trackSelectService;
+            _spotifySearchService = spotifySearchService;
         }
 
         [HttpGet("{trackId}")]
@@ -30,7 +32,7 @@ namespace BeatMatcher.Controllers
             var searchResults = await _spotifySearchService.GetSongs("query", token);
 
             // Select the track from the search results
-            var selectedTrack = _spotifySearchService.SelectSong(searchResults, Convert.ToInt32(trackId));
+            var selectedTrack = _spotifySearchService.SelectSong(searchResults, int.Parse(trackId));
 
             if (selectedTrack == null)
             {
